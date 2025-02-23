@@ -53,4 +53,6 @@ jobs:
             docker.io/${{ secrets.DOCKER_USERNAME }}/melhorconsulta-frontend:latest
 
       - name: Exibir digest da imagem
-        run: echo "Image digest: ${{ steps.docker_build.outputs.digest }}"
+        run: | 
+          echo  "Image digest: ${{ steps.docker_build.outputs.digest }}"
+

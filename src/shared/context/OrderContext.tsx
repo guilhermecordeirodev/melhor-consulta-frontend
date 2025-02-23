@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from "react";
+import { FederalIdentificationDTO } from "../../dtos/cpf";
 import { IOrder, IOrderRequest } from "../../dtos/order";
 import api from "../services/api/api";
 import { useAuth } from "./AuthContext";
@@ -7,6 +8,7 @@ interface IOrderContext {
   order: IOrder;
   sendOrder: (order: IOrderRequest) => Promise<IOrder>;
   removeOrder: () => void;
+  checkFederalIdentification: (orderId: string) => Promise<FederalIdentificationDTO>
 }
 
 const OrderContext = createContext<IOrderContext>({} as IOrderContext);
@@ -40,9 +42,23 @@ export function OrderProvider({ children }: any) {
     setOrder({} as IOrder);
   }
 
+  const checkFederalIdentification = async (orderId: string) => {
+    try {
+      const response = await api.get(`/search/${orderId}`, {
+        headers: {
+          Authorization: `Bearer ${user.accessToken}`
+        }
+      })
+      return response.data;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   return <OrderContext.Provider value={{
     order,
     sendOrder,
-    removeOrder
+    removeOrder,
+    checkFederalIdentification
   }}>{children}</OrderContext.Provider>;
 }

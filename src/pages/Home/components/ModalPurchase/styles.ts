@@ -68,3 +68,22 @@ export const SectionContainer = styled.section`
     flex-direction: column;
   }
 `;
+
+export const HeroInput = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 400px;
+  gap: 10px;
+
+  button {
+    background-color: ${colors.green};
+    border: none;
+    color: #06054B;
+    padding: 1rem;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+  }
+`;

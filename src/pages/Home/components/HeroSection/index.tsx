@@ -7,7 +7,7 @@ import bgHero from '../../../../shared/assets/images/BG.png';
 import ControlledInput from '../../../../shared/components/ControlledInput';
 import LoadingBackdrop from "../../../../shared/components/LoadingBackdrop";
 import api from '../../../../shared/services/api/api';
-import { maskCPForCNPJ } from "../../../../shared/utils/formatters";
+import { maskCPForCNPJ, removeSpecialChars } from "../../../../shared/utils/formatters";
 import Modal from "../ModalPurchase";
 import { Container, HeroContent, HeroInput, Overlay, Title } from './styles';
 
@@ -33,7 +33,7 @@ export default function HeroSection({ products }: IHeroProps) {
   async function handleSubmitForm(data: IHeroForm) {
     setLoading(true);
     try {
-      const response = await api.get(`/public/cpf/${data.cpf}`)
+      const response = await api.get(`/public/cpf/${removeSpecialChars(data.cpf)}`)
       setUserData(response.data);
       setLoading(false);
       setModalOpen(true);

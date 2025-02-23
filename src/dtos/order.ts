@@ -2,6 +2,7 @@ export interface IOrderRequest {
   productId: string;
   federalId?: string;
   userId: string;
+  cpf?: string
 }
 
 export interface IOrder {

@@ -12,7 +12,7 @@ import Modal from "../ModalPurchase";
 import { Container, HeroContent, HeroInput, Overlay, Title } from './styles';
 
 interface IHeroForm {
-  cpf: string;
+  cpf?: string;
 }
 
 const schema: Yup.ObjectSchema<IHeroForm> = Yup.object().shape({

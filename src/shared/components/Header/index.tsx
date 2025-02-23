@@ -23,7 +23,7 @@ import {
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, _setLoading] = useState(false);
   const navigate = useNavigate();
 
   const { user } = useAuth();

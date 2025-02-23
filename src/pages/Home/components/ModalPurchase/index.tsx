@@ -30,7 +30,7 @@ interface IModalProps {
 }
 
 interface IHeroForm {
-  cpf: string;
+  cpf?: string;
 }
 
 const schema: Yup.ObjectSchema<IHeroForm> = Yup.object().shape({

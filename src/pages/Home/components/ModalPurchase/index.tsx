@@ -99,7 +99,7 @@ const Modal = ({ isOpen, onClose, products, userData }: IModalProps) => {
       console.error("Erro ao buscar dados do federalIdentification:", error);
     }
   };
-  let interval: number | undefined
+  let interval: ReturnType<typeof setTimeout>;
   useEffect(() => {
     if (order && order.id) {
       interval = setInterval(async () => {

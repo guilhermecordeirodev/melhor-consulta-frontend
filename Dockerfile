@@ -1,27 +1,18 @@
-# Etapa 1: Construção da Aplicação com Node 20
-FROM node:20 AS builder
+# Etapa de build
+FROM --platform=$TARGETPLATFORM node:20 AS builder
 WORKDIR /app
 
-# Copia apenas os arquivos essenciais para instalar dependências
+# Copia apenas os arquivos essenciais para instalar dependências primeiro e usar cache
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 
-# Copia o restante do código e realiza o build
+# Copia todo o código e constrói o projeto
 COPY . .
 RUN yarn build
 
-# Etapa 2: Servindo a aplicação com Nginx
-FROM nginx:alpine
+# Etapa de execução
+FROM --platform=$TARGETPLATFORM nginx:latest
 WORKDIR /usr/share/nginx/html
-
-# Remove arquivos padrão do Nginx
-RUN rm -rf ./*
-
-# Copia os arquivos do build React/Vite para o servidor
-COPY --from=builder /app/dist ./
-
-# Copia configuração customizada do Nginx (para roteamento SPA)
-COPY nginx.conf /etc/nginx/nginx.conf
-
+COPY --from=builder /app/dist .
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

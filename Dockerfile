@@ -13,7 +13,7 @@ COPY tsconfig*.json .
 
 RUN yarn install --network-timeout 300000
 
-COPY ./public/index.html ./public/index.html
+COPY ./index.html ./public/index.html
 COPY ./src ./src
 
 RUN yarn build

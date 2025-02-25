@@ -1,5 +1,5 @@
 # Etapa de build
-FROM --platform=$TARGETPLATFORM node:20 AS builder
+FROM node:20 AS builder
 WORKDIR /app
 
 # Copia apenas os arquivos essenciais para instalar dependências primeiro e usar cache

@@ -27,7 +27,7 @@ const Modal = ({ isOpen, onClose, products, userData }: IModalProps) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [order, setOrder] = useState<IOrder | null>(null);
   const [updatedUserData, setUpdatedUserData] = useState<FederalIdentificationDTO | undefined>(undefined);
-  const { user, isAuthenticated, login } = useAuth();
+  const { isAuthenticated, login } = useAuth();
   const { sendOrder, checkFederalIdentification } = useOrder();
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
 

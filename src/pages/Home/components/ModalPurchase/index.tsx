@@ -1,21 +1,15 @@
-import { yupResolver } from "@hookform/resolvers/yup";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import * as Yup from "yup";
 import { FederalIdentificationDTO } from "../../../../dtos/cpf";
 import { IOrder } from "../../../../dtos/order";
 import { Product } from "../../../../dtos/product";
-import ControlledInput from "../../../../shared/components/ControlledInput";
 import LoadingBackdrop from "../../../../shared/components/LoadingBackdrop";
 import { PackageCard } from "../../../../shared/components/PackageCard";
 import { useAuth } from "../../../../shared/context/AuthContext";
 import { useOrder } from "../../../../shared/context/OrderContext";
-import { maskCPForCNPJ, removeSpecialChars } from "../../../../shared/utils/formatters";
 import PaymentQRCode from "../PaymentQRCode";
 import {
   CloseButton,
-  HeroInput,
   ModalContainer,
   ModalOverlay,
   SectionContainer,
@@ -29,14 +23,6 @@ interface IModalProps {
   userData?: FederalIdentificationDTO;
 }
 
-interface IHeroForm {
-  cpf?: string;
-}
-
-const schema: Yup.ObjectSchema<IHeroForm> = Yup.object().shape({
-  cpf: Yup.string().required("O CPF é obrigatório"),
-});
-
 const Modal = ({ isOpen, onClose, products, userData }: IModalProps) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [order, setOrder] = useState<IOrder | null>(null);
@@ -44,17 +30,21 @@ const Modal = ({ isOpen, onClose, products, userData }: IModalProps) => {
   const { user, isAuthenticated, login } = useAuth();
   const { sendOrder, checkFederalIdentification } = useOrder();
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
-  const { control, handleSubmit } = useForm({ resolver: yupResolver(schema) });
 
-  async function generateOrder(id: string, cpf?: string) {
+  async function generateOrder(id: string, accessToken: string, userId: string) {
     setLoading(true);
     try {
+      if (!accessToken) {
+        console.error("Erro: Tentativa de gerar pedido sem token válido.");
+        return;
+      }
+  
       const response = await sendOrder({
         productId: id,
         federalId: userData?.id || "",
-        userId: isAuthenticated ? user.user.id : "",
-        cpf,
-      });
+        userId,
+      }, accessToken); // Passa o token explicitamente
+  
       setOrder(response);
     } catch (e) {
       console.error("Erro ao gerar pedido:", e);
@@ -62,29 +52,34 @@ const Modal = ({ isOpen, onClose, products, userData }: IModalProps) => {
       setLoading(false);
     }
   }
-
+  
   async function authSuccess(data: CredentialResponse) {
+    console.log("Autenticando usuário...", data);
     setLoading(true);
+  
     try {
-      await login(data.credential);
+      const userLogado = await login(data.credential); // Aguarda autenticação
+  
+      if (!userLogado || !userLogado.accessToken) {
+        console.error("Erro: Usuário não autenticado corretamente.");
+        return;
+      }
+  
+      console.log("Usuário autenticado com sucesso:", userLogado);
+  
       if (selectedProductId) {
-        generateOrder(selectedProductId);
+        console.log("Gerando pedido para o produto:", selectedProductId);
+        await generateOrder(selectedProductId, userLogado.accessToken, userLogado.user.id); // Passa o token e ID atualizado
       }
     } catch (e) {
       console.error("Erro ao autenticar:", e);
     } finally {
       setLoading(false);
     }
-  }
+  }  
 
   const handleProductSelect = (id: string) => {
     setSelectedProductId(id);
-  };
-
-  const onSubmit = (data: IHeroForm) => {
-    if (selectedProductId) {
-      generateOrder(selectedProductId, removeSpecialChars(data.cpf));
-    }
   };
 
   const fetchFederalIdentification = async (orderId: string) => {
@@ -99,6 +94,7 @@ const Modal = ({ isOpen, onClose, products, userData }: IModalProps) => {
       console.error("Erro ao buscar dados do federalIdentification:", error);
     }
   };
+
   let interval: ReturnType<typeof setTimeout>;
   useEffect(() => {
     if (order && order.id) {
@@ -112,9 +108,9 @@ const Modal = ({ isOpen, onClose, products, userData }: IModalProps) => {
 
   useEffect(() => {
     if (updatedUserData?.id) {
-      clearInterval(interval)
+      clearInterval(interval);
     }
-  }, [updatedUserData])
+  }, [updatedUserData]);
 
   if (!isOpen) return null;
 
@@ -127,7 +123,6 @@ const Modal = ({ isOpen, onClose, products, userData }: IModalProps) => {
           <ModalContainer>
             <CloseButton onClick={onClose}>X</CloseButton>
 
-            {/* Se já tiver federalIdentification atualizado, exibe apenas os dados novos */}
             {updatedUserData ? (
               <UserInfo>
                 <p><strong>Nome:</strong> {updatedUserData.nome}</p>
@@ -167,6 +162,7 @@ const Modal = ({ isOpen, onClose, products, userData }: IModalProps) => {
                   </UserInfo>
                 )}
 
+
                 {order ? (
                   <PaymentQRCode pixKey={order.qrCode} />
                 ) : (
@@ -187,25 +183,8 @@ const Modal = ({ isOpen, onClose, products, userData }: IModalProps) => {
                       ))}
                     </SectionContainer>
 
-                    {selectedProductId && (
-                      <>
-                        {!isAuthenticated && (
-                          <GoogleLogin
-                            onSuccess={authSuccess}
-                            ux_mode="popup"
-                            onError={() => {}}
-                          />
-                        )}
-
-                        {isAuthenticated && (
-                          <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
-                            <HeroInput>
-                              <ControlledInput control={control} mask={maskCPForCNPJ} name="cpf" placeholder="Digite o seu CPF aqui" />
-                              <button onClick={handleSubmit(onSubmit)}>Consultar CPF</button>
-                            </HeroInput>
-                          </div>
-                        )}
-                      </>
+                    {selectedProductId && !isAuthenticated && (
+                      <GoogleLogin onSuccess={authSuccess} ux_mode="popup" onError={() => {}} />
                     )}
                   </>
                 )}

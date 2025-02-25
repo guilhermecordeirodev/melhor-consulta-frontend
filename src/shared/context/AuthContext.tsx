@@ -4,7 +4,7 @@ import api from '../services/api/api';
 
 interface IAuthContext {
   user: User; 
-  login: (token: string) => Promise<void>; 
+  login: (token: string) => Promise<User>; 
   logout: () => void; 
   isAuthenticated: boolean;
 }
@@ -20,11 +20,12 @@ export function AuthProvider({ children }: any) {
   const [user, setUser] = useState<User>({} as User);
 
 
-  async function login(token: string) {
+  async function login(token: string): Promise<User> {
     const response = await api.post('/auth/google', { idToken: token });
     api.defaults.headers.common.Authorization = response.data.accessToken;
-  
+    console.log(response)
     setUser(response.data);
+    return response.data;
   }
 
 

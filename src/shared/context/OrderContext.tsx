@@ -6,7 +6,7 @@ import { useAuth } from "./AuthContext";
 
 interface IOrderContext {
   order: IOrder;
-  sendOrder: (order: IOrderRequest) => Promise<IOrder>;
+  sendOrder: (order: IOrderRequest, accessToken: string) => Promise<IOrder>;
   removeOrder: () => void;
   checkFederalIdentification: (orderId: string) => Promise<FederalIdentificationDTO>
 }
@@ -22,22 +22,20 @@ export function OrderProvider({ children }: any) {
 
   const [order, setOrder] = useState<IOrder>({} as IOrder);
 
-
-  async function sendOrder (order: IOrderRequest): Promise<IOrder> {
+  async function sendOrder(order: IOrderRequest, accessToken: string): Promise<IOrder> {
     try {
       const response = await api.post('/generate-payment', order, {
-        headers: {
-          Authorization: `Bearer ${user.accessToken}`
-        }
+        headers: { Authorization: `Bearer ${accessToken}` },
       });
+  
       setOrder(response.data);
       return response.data;
     } catch (e) {
-      console.log(e)
-      throw new Error("Erro ao gerar pagamento!")
+      console.error("Erro ao gerar pagamento:", e);
+      throw new Error("Erro ao gerar pagamento!");
     }
-  }
-
+  }  
+  
   const removeOrder = () => {
     setOrder({} as IOrder);
   }

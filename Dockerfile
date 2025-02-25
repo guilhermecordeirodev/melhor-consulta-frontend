@@ -1,21 +1,13 @@
-# => Build container
-# docker build -t engenhoagro/web-ecooperativa . 
-# docker push engenhoagro/web-ecooperativa:latest
-FROM node:20 as builder
-
-RUN mkdir -p /app/node_modules && chown -R node:node /app
-
+# Etapa de build
+FROM --platform=$TARGETPLATFORM node:20 AS builder
 WORKDIR /app
 
-COPY package.json .
-COPY yarn.lock .
-COPY tsconfig*.json .
+# Copia apenas os arquivos essenciais para instalar dependências primeiro e usar cache
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
 
-RUN yarn install --network-timeout 300000
-
-COPY ./index.html ./public/index.html
-COPY ./src ./src
-
+# Copia todo o código e constrói o projeto
+COPY . .
 RUN yarn build
 
 # => Run container

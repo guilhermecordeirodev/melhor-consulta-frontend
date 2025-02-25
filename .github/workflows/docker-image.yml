@@ -24,14 +24,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Cache do Yarn
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/yarn
-          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            yarn-${{ runner.os }}-
-
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v3
 

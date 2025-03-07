@@ -1,6 +1,13 @@
-// PackageCard.jsx
-import { formatBRLCurrency } from '../../utils/formatBRLCurrency';
-import { Body, Button, CardContainer, Header, Price, ProductName } from './styles';
+import { formatBRLCurrency } from "../../utils/formatBRLCurrency";
+import {
+  Body,
+  Button,
+  CardContainer,
+  Header,
+  Price,
+  ProductName,
+  Subtitle,
+} from "./styles";
 
 interface IPackageCardProps {
   id: string;
@@ -9,14 +16,22 @@ interface IPackageCardProps {
   subtitle: string;
   productName: string;
   highlight: boolean;
-  action: (id: string) => any
+  action: (id: string) => void;
 }
 
-export function PackageCard({ id, title, price, subtitle, productName, highlight = false, action }: IPackageCardProps) {
-  async function generateOrder() {
+export function PackageCard({
+  id,
+  title,
+  price,
+  subtitle,
+  productName,
+  highlight = false,
+  action,
+}: IPackageCardProps) {
+  function handleClick() {
     action(id);
   }
-  
+
   return (
     <CardContainer highlight={highlight}>
       <Header highlight={highlight}>
@@ -25,9 +40,11 @@ export function PackageCard({ id, title, price, subtitle, productName, highlight
       <Body highlight={highlight}>
         <ProductName>{productName}</ProductName>
         <Price highlight={highlight}>{formatBRLCurrency(price)}</Price>
-        <p>{subtitle}</p>
+        <Subtitle>{subtitle}</Subtitle>
       </Body>
-      <Button highlight={highlight} onClick={generateOrder}>Comprar</Button>
+      <Button highlight={highlight} onClick={handleClick}>
+        Comprar
+      </Button>
     </CardContainer>
   );
 }

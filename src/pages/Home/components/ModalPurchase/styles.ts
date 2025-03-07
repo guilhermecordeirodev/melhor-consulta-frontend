@@ -1,5 +1,5 @@
-import styled from 'styled-components';
-import { colors } from '../../../../shared/assets/colors';
+import styled from "styled-components";
+import { colors } from "../../../../shared/assets/colors";
 
 export const ModalOverlay = styled.div`
   position: fixed;
@@ -22,7 +22,7 @@ export const ModalContainer = styled.div`
   text-align: center;
   position: relative;
 
-  @media (max-width: 400px) {
+  @media (max-width: 768px) {
     width: 90vw;
   }
 `;
@@ -49,41 +49,58 @@ export const UserInfo = styled.div`
   background: #f9f9f9;
 `;
 
-export const SectionContainer = styled.section`
-  padding: 3rem 1rem;
-  text-align: center;
+export const ShowMoreButton = styled.button`
+  margin-top: 10px;
+  background: ${colors.green};
+  border: none;
+  color: #06054b;
+  padding: 0.5rem 1rem;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+`;
 
-  display: flex;
-  flex-direction: row;
-  gap: 1.5rem;
+/* Título principal (desktop + mobile) */
+export const DesktopTitle = styled.h2`
+  font-size: 2rem;
+  color: ${colors.text};
+  margin-bottom: 1rem;
 
-  h2 {
-    font-size: 48px;
-    color: ${colors.text};
-    margin-bottom: 2rem;
-  }
-
-  @media (max-width: 400px) {
-    display: none;
-    flex-direction: column;
+  @media (max-width: 768px) {
+    font-size: 1.5rem; /* Título menor no mobile */
   }
 `;
 
-export const HeroInput = styled.div`
+/* Container dos cards */
+export const SectionContainer = styled.section`
   display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 400px;
-  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  /* 'flex-wrap: wrap' permite quebrar linha se a tela for menor que o total */
+  /* flex-wrap: wrap; */
+  margin-top: 1rem;
 
-  button {
-    background-color: ${colors.green};
-    border: none;
-    color: #06054B;
-    padding: 1rem;
-    border-radius: 15px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
+  /* No desktop, cada card deve aparecer lado a lado (o flex-wrap ajuda se não couber) */
+  /* Se quiser FORÇAR que fiquem na mesma linha sempre, você poderia usar white-space: nowrap e overflow-x: auto */
+  /* Mas geralmente 'flex-wrap' é o mais comum. */
+
+  @media (max-width: 768px) {
+    gap: 0.6rem; /* Pode reduzir o espaço entre cards no mobile */
   }
+`;
+
+/* Badge para destacar o pacote recomendado */
+export const Badge = styled.span`
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: ${colors.green};
+  color: #fff;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 `;

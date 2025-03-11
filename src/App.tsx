@@ -8,6 +8,7 @@ import { AuthProvider } from './shared/context/AuthContext';
 import { OrderProvider } from './shared/context/OrderContext';
 
 function App() {
+  console.log("v1")
   return (
     <GoogleOAuthProvider clientId="698486776110-njalm788mhjms4nr2h7bucfsgrf5r65g">
        <AuthProvider>
